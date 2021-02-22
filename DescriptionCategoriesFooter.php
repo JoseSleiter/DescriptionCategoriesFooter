@@ -4,13 +4,15 @@ use PrestaShopBundle\Form\Admin\Type\TranslatableType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use PrestaShopBundle\Form\Admin\Type\FormattedTextareaType;
+use PrestaShopBundle\Form\Admin\Type\TranslateType;
 
 class DescriptionCategoriesFooter extends Module
 {
     public static $definition = array(
-        'table' => 'ps_category_lang',
+        'table' => 'category_lang',
         'fields' => array(
-            '_footer_title', '_footer_description'
+            array('type' => 'TEXT', 'name' => '_footer_description', 'separetor' => ','),
+            array('type' => 'TEXT', 'name' => '_footer_title', 'separetor' => ''),
         )
     );
 
@@ -23,7 +25,7 @@ class DescriptionCategoriesFooter extends Module
         $this->name = 'descriptioncategoriesfooter';
         $this->tab = 'others';
         $this->version = '1.0.0';
-        $this->author = 'sleiter.js@gmail.com';
+        $this->author = 'me';
         $this->bootstrap = true;
         parent::__construct();
 
@@ -71,7 +73,7 @@ class DescriptionCategoriesFooter extends Module
         $languages = Language::getLanguages(true);
         $formBuilder = $params['form_builder'];
         $formBuilder->add(
-            $this->name . self::$definition['fields'][0],
+            $this->name . self::$definition['fields'][0]['name'],
             TranslateType::class,
             [
                 'type' => FormattedTextareaType::class,
@@ -79,11 +81,11 @@ class DescriptionCategoriesFooter extends Module
                 'hideTabs' => false,
                 'label' => $this->l('Description Footer'),
                 'required' => false,
-                'data' => $category->DescriptionCategoriesFooter_footer_description
+                'data' => $category->descriptioncategoriesfooter_footer_description
             ]
         );
         foreach ($languages as $lang) {
-            $params['data'][$this->name . self::$definition['fields'][0]][$lang['id_lang']] = $category->DescriptionCategoriesFooter_newfield1[$lang['id_lang']];
+            $params['data'][$this->name . self::$definition['fields'][0]['name']][$lang['id_lang']] = $category->descriptioncategoriesfooter_footer_description[$lang['id_lang']];
         }
         $formBuilder->setData($params['data'], $params);
     }
@@ -106,16 +108,19 @@ class DescriptionCategoriesFooter extends Module
         $this->updateData($params['form_data'], $params);
     }
 
+    private function getFieldName($field)
+    {
+        return $this->name . $field['name'];
+    }
+
     /**
      * Fonction qui va effectuer la mise à jour
      * @param array $data
      */
     protected function updateData(array $data, $params)
     {
-        // var_dump($data[$this->name . self::$definition['fields'][0]]);
-        // exit();
         $category = new Category((int)$params['id']);
-        $category->DescriptionCategoriesFooter_footer_description  = $data[$this->name . self::$definition['fields'][0]];
+        $category->descriptioncategoriesfooter_footer_description  = $data[$this->name . self::$definition['fields'][0]['name']];
         $category->update();
     }
 
@@ -125,9 +130,13 @@ class DescriptionCategoriesFooter extends Module
      */
     private function _installSql()
     {
-        $sqlInstall = 'ALTER TABLE ' . _DB_PREFIX_ . self::$definition['table'] . ' ADD ' . $this->name . self::$definition['fields'][0] . ' VARCHAR(255) NULL';
-
-        return Db::getInstance()->execute($sqlInstall);
+        $fields = '';
+        foreach (self::$definition['fields'] as $name_field) {
+            $fields .= ' ADD ' . $this->getFieldName($name_field) . ' ' .  $name_field['type'] . ' DEFAULT NULL ' . $name_field['separetor'];
+        }
+        $sqlInstall = 'ALTER TABLE ' . _DB_PREFIX_ . self::$definition['table'] . $fields . ' ';
+        Db::getInstance()->execute($sqlInstall);
+        return true;
     }
 
     /**
@@ -136,9 +145,12 @@ class DescriptionCategoriesFooter extends Module
      */
     private function _unInstallSql()
     {
-        $sqlUnInstall = 'ALTER TABLE  ' . _DB_PREFIX_ . self::$definition['table'] . ' DROP ' . $this->name . self::$definition['fields'][0];
-
-        return Db::getInstance()->execute($sqlUnInstall);
+        $fields = '';
+        foreach (self::$definition['fields'] as $name_field) {
+            $fields .= ' DROP ' . $this->getFieldName($name_field) . ' ' . $name_field['separetor'];
+        }
+        $sqlUnInstall = 'ALTER TABLE  ' . _DB_PREFIX_ . self::$definition['table'] . $fields;
+        Db::getInstance()->execute($sqlUnInstall);
+        return true;
     }
 }
-// FormattedTextareaType::class
