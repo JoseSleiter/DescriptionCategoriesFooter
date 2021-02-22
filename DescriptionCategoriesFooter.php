@@ -25,7 +25,7 @@ class descriptioncategoriesfooter extends Module
         $this->name = 'descriptioncategoriesfooter';
         $this->tab = 'others';
         $this->version = '1.0.0';
-        $this->author = 'me';
+        $this->author = 'sleiter.js@gmail.com';
         $this->bootstrap = true;
         parent::__construct();
 
