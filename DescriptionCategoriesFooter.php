@@ -6,7 +6,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use PrestaShopBundle\Form\Admin\Type\FormattedTextareaType;
 use PrestaShopBundle\Form\Admin\Type\TranslateType;
 
-class DescriptionCategoriesFooter extends Module
+class descriptioncategoriesfooter extends Module
 {
     public static $definition = array(
         'table' => 'category_lang',
