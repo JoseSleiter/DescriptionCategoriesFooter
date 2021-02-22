@@ -45,6 +45,8 @@ class descriptioncategoriesfooter extends Module
                 'actionCategoryFormBuilderModifier',
                 'actionAfterCreateCategoryFormHandler',
                 'actionAfterUpdateCategoryFormHandler',
+                'actionAdminCategoriesFormModifier',
+                'actionAdminCategoriesControllerSaveAfter',
             ])
             || !$this->_installSql()
         ) {
@@ -171,7 +173,6 @@ class descriptioncategoriesfooter extends Module
 
     public function hookActionAdminCategoriesControllerSaveAfter($params)
     {
-        // $category = new Category((int)Tools::getValue('id_category'));
         $languages = Language::getLanguages(true);
         foreach ($languages as $lang) {
             $params['fields_value'][$this->getFieldName(self::$definition['fields'][0])][$lang['id_lang']] = Tools::htmlentitiesUTF8(Tools::getValue($this->getFieldName(self::$definition['fields'][0]) . '_' . $lang['id_lang']));
