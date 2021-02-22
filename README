@@ -35,13 +35,17 @@ Then into some file add in $definition static var, your personality var
 
 Then add new hook and the next code into themes\your_theme\templates\catalog\listing\product-list.tpl 
 ```sh
-<div class="block-category card card-block">
-    <div class="block-category-inner">
-        <div id="category-description" class="text-muted">    
-            {$category.descriptioncategoriesfooter_name_var nofilter}
-        </div>
-    </div>        
-</div>
+    {if !empty($category.descriptioncategoriesfooter_footer_description)}  
+      <div class="block-category card card-block">
+        <div class="block-category-inner">
+          <div id="category-description" class="text-muted">    
+            
+            {$category.descriptioncategoriesfooter_footer_description nofilter}
+       
+          </div>
+        </div>        
+      </div>
+    {/if}
 ```
 
 ## License
