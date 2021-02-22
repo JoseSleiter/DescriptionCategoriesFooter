@@ -108,6 +108,78 @@ class descriptioncategoriesfooter extends Module
         $this->updateData($params['form_data'], $params);
     }
 
+
+    public function hookActionAdminCategoriesFormModifier($params)
+    {
+
+        $category = new Category((int)Tools::getValue('id_category'));
+
+        $params['fields'][0]['form']['input'][] =  array(
+            'type' => 'textarea',
+            'autoload_rte' => true,
+            'rows' => "10",
+            'cols' => "45",
+            'lang' => true,
+            'label' => $this->l('Description Footer'),
+            'name' => $this->name . self::$definition['fields'][0]['name'],
+        );
+
+        //Modification des propriétés d'un champ déjà existant
+        // foreach ( $params['fields'][0]['form']['input'] as &$field ){
+
+        //   if ( $field['name'] == 'meta_description'){
+        //         $field['maxlength'] = '255';
+        //         $field['maxchar'] = '255';        
+        //         $field['hint'] = 'Modified by a module';
+        //     }
+        // }
+
+        //Création d'un nouveau fieldset
+        // $params['fields'][$this->name] = array(
+        //     'form' => array(
+        //         'legend' => array(
+        //             'title' => $this->l('Sample Category Fieldset'),
+        //             'icon' => 'icon-tags',
+        //         ),
+        //         'description' => $this->l('New sample fieldset'),
+        //         'input' => array(
+        //             array(
+        //                 'type' => 'text',
+        //                 'label' => $this->l('Custom field New Fieldset 1'),
+        //                 'name' => $this->name.'_newfieldset1',
+        //             ),
+        //             array(
+        //                 'type' => 'text',
+        //                 'label' => $this->l('Custom field New Fieldset 2'),
+        //                 'name' => $this->name.'_newfieldset2',
+        //             ),
+        //         )
+        //     )
+        // );
+        //Pour remonter les valeurs des champs
+        // $params['fields_value'][$this->name.'_newfield1'] = 'Custom value 1';
+        // $params['fields_value'][$this->name.'_newfieldset1'] = 'Custom value fieldset 1';
+        // $params['fields_value'][$this->name.'_newfieldset2'] = 'Custom value fieldset 2';
+
+        // foreach ($languages as $lang) {
+        //   $params['fields_value'][$this->getFieldName(self::$definition['fields'][0])][$lang['id_lang']] = Tools::htmlentitiesDecodeUTF8($category->descriptioncategoriesfooter_footer_description[$lang['id_lang']]);
+
+        // }
+        $params['fields_value'][$this->getFieldName(self::$definition['fields'][0])] = $category->descriptioncategoriesfooter_footer_description;
+    }
+
+
+    public function hookActionAdminCategoriesControllerSaveAfter($params)
+    {
+        // $category = new Category((int)Tools::getValue('id_category'));
+        $languages = Language::getLanguages(true);
+        foreach ($languages as $lang) {
+            $params['fields_value'][$this->getFieldName(self::$definition['fields'][0])][$lang['id_lang']] = Tools::htmlentitiesUTF8(Tools::getValue($this->getFieldName(self::$definition['fields'][0]) . '_' . $lang['id_lang']));
+        }
+        // $fiedlset2 = Tools::getValue($this->name.'_newfieldset2');
+    }
+
+
     private function getFieldName($field)
     {
         return $this->name . $field['name'];
